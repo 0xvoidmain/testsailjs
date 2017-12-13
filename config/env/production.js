@@ -18,7 +18,7 @@ module.exports = {
    ***************************************************************************/
 
   models: {
-    connection: 'mongodbServer'
+    connection: 'mongodbServerProd'
   },
 
   /***************************************************************************
@@ -40,6 +40,6 @@ module.exports = {
     apiKey: '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'
   },
   web: {
-    domain: 'https://cohober.herokuapp.com'
+    domain: 'https://api.cohober.vn'
   }
 };
