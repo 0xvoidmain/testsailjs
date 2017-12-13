@@ -1,0 +1,4 @@
+{
+  "ignore": [".git/*", ".gitignore", ".eslintcache", "frontend/*", "assets/*"],
+  "exec": "node index.js --dev"
+}

@@ -1,0 +1,12 @@
+{
+  "generators": {
+    "modules": {}
+  },
+  "hooks": {
+    "session": false,
+    "grunt": false
+  },
+  "paths": {
+    "public": "./frontend/assets"
+  }
+}

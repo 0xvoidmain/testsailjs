@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%=typeof title == 'undefined' ? 'Cohober' : title%></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="og:title" content="Cohober">
+    <meta name="fb:id" content="1063388503796610">
+    <meta name="og:url" content="">
+    <link href="styles/bootstrap.css" rel="stylesheet">
+    <link href="font-awesome/css/font-awesome.css" rel="stylesheet">
+  </head>
+
+  <body>
+    <div id="app">
+      <router-view></router-view>
+      <vue-progress-bar></vue-progress-bar>
+    </div>
+    <script>
+      var __INIT_DATA = JSON.parse(<%- JSON.stringify(typeof data == 'object' ? data : '{}') %>)
+    </script>
+    <script src="js/client.js"></script>
+
+    <script>
+      window.fbAsyncInit = function() {
+        FB.init({
+          appId      : '1063388503796610',
+          cookie     : true,
+          xfbml      : true,
+          version    : 'v2.8'
+        });
+        FB.AppEvents.logPageView();
+      };
+
+      (function(d, s, id){
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) {return;}
+        js = d.createElement(s); js.id = id;
+        js.src = "//connect.facebook.net/en_US/sdk.js";
+        fjs.parentNode.insertBefore(js, fjs);
+      }(document, 'script', 'facebook-jssdk'));
+    </script>
+  </body>
+</html>
