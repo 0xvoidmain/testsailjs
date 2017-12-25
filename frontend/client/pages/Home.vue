@@ -151,7 +151,7 @@
         <span class="l">url</span> /api/projects/nearMe</u> <br/>
         <span class="l">method</span> GET <br/>
         <span class="l">header</span> { Authorization: <u>token</u> } <br/>
-        <span class="l">params</span> { where: { <i>type: enum["raiseFunding", "idea"]}</i>, location: [<u>lng</u>, <u>lat</u>]}, limit, skip, <i>populate: 'owner,category'</i> } <br/>
+        <span class="l">params</span> { where: { <i>type: enum["raiseFunding", "idea"]</i>, location: [<u>lng</u>, <u>lat</u>]}, limit, skip, <i>populate: 'owner,category'</i> } <br/>
       </div>
     </div>
 
