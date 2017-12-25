@@ -9,20 +9,22 @@ module.exports = {
   register: A(async (req, res) => {
     req.check('email', 'Email không đúng định dạng').optional().isEmail();
     req.check('phoneNumber', 'Số điện thoại không đúng định dạng').optional().isMobilePhone('vi-VN');
-    req.check('password', 'Mật khẩu phải có ít nhất 6 ký tự').isLength({ min: 6 });
+    req.check('password', 'Mật khẩu phải có ít nhất 6 ký tự').isLength({min: 6});
 
     const validErrors = await req.getValidationResult();
 
     if (!validErrors.isEmpty()) {
       return res.badRequest(validErrors.array());
     }
-    var { email = '', phoneNumber = '', password, name, platform, deviceId } = req.body || {};
+    var {email = '', phoneNumber = '', password, name, platform, deviceId, language = 'en'} = req.body || {};
     email = email.trim();
     phoneNumber = phoneNumber.trim();
     phoneNumber = phone(phoneNumber, 'VN')[0];
 
     if (!email && !phoneNumber) {
-      return res.badRequest([{ msg: 'Thông tin đăng ký không đúng. Vui lòng nhập email hoặc số điện thoại' }]);
+      if (language === 'vi')
+        return res.badRequest([{msg: 'Thông tin đăng ký không đúng. Vui lòng nhập email hoặc số điện thoại'}]);
+      else return res.badRequest([{msg: 'Invalid login information. Please enter email or telephone number'}]);
     }
 
     if (email) {
@@ -30,7 +32,9 @@ module.exports = {
         email
       });
       if (findUser) {
-        return res.badRequest([{ msg: 'Email đã được sử dụng' }]);
+        if (language === 'vi')
+          return res.badRequest([{msg: 'Email đã được sử dụng'}]);
+        else return res.badRequest([{msg: 'Email has been used'}]);
       }
     }
 
@@ -39,14 +43,17 @@ module.exports = {
         phoneNumber
       });
       if (findUser) {
-        return res.badRequest([{ msg: 'Số điện thoại đã được sử dụng' }]);
+        if (language === 'vi')
+          return res.badRequest([{msg: 'Số điện thoại đã được sử dụng'}]);
+        else return res.badRequest([{msg: 'Phone number has been used'}])
+
       }
     }
 
 
     const salt = await P(bcrypt.genSalt, 10);
     const hash = await P(bcrypt.hash, password, salt);
-    const uuid = jwt.issue({ email: email });
+    const uuid = jwt.issue({email: email});
 
     var newUserData = {
       password: hash,
@@ -80,13 +87,16 @@ module.exports = {
 
     user.token = token;
     if (user.email) {
-      sendgrid.sendRegisterEmail(user.email, user.name, sails.config.web.domain + '/active-email?uuid=' + uuid);
+      if (language === 'vi')
+        sendgrid.sendRegisterEmail(user.email, user.name, sails.config.web.domain + '/active-email?uuid=' + uuid)
+      else
+        sendgrid.sendRegisterEmailEN(user.email, user.name, sails.config.web.domain + '/active-email?uuid=' + uuid);
     }
 
     res.ok(user);
   }),
   login: A(async (req, res) => {
-    var { email = '', phoneNumber = '', deviceId, platform, password } = req.body || {};
+    var {email = '', phoneNumber = '', deviceId, platform, password, language = 'en'} = req.body || {};
     email = email.trim();
     phoneNumber = phoneNumber.trim();
     phoneNumber = phone(phoneNumber, 'VN')[0];
@@ -96,13 +106,15 @@ module.exports = {
         email
       });
       if (!user) {
-        return res.badRequest([{ msg: 'Email hoặc mật khẩu không đúng' }]);
+        if (language === 'vi') return res.badRequest([{msg: 'Email hoặc mật khẩu không đúng'}]);
+        else return res.badRequest([{msg: 'Email or password is incorrect'}])
       }
 
       var isPasswordMatch = await P(bcrypt.compare, password, user.password);
 
       if (!isPasswordMatch) {
-        return res.badRequest([{ msg: 'Email hoặc mật khẩu không đúng' }]);
+        if (language === 'vi') return res.badRequest([{msg: 'Email hoặc mật khẩu không đúng'}]);
+        else return res.badRequest([{msg: 'Email or password is incorrect'}])
       }
     }
 
@@ -111,13 +123,17 @@ module.exports = {
         phoneNumber
       });
       if (!user) {
-        return res.badRequest([{ msg: 'Số điện thoại hoặc mật khẩu không đúng' }]);
+        if (language === 'vi')
+          return res.badRequest([{msg: 'Số điện thoại hoặc mật khẩu không đúng'}]);
+        else return res.badRequest([{msg: 'Phone number or password incorrect'}]);
       }
 
       var isPasswordMatch = await P(bcrypt.compare, password, user.password);
 
       if (!isPasswordMatch) {
-        return res.badRequest([{ msg: 'Số điện thoại hoặc mật khẩu không đúng' }]);
+        if (language === 'vi')
+          return res.badRequest([{msg: 'Số điện thoại hoặc mật khẩu không đúng'}]);
+        else return res.badRequest([{msg: 'Phone number or password incorrect'}]);
       }
     }
 
@@ -141,15 +157,19 @@ module.exports = {
       return res.ok(user);
     }
     else {
-      res.badRequest([{ msg: 'Thông tin đăng nhập không đúng' }]);
+      if (language == 'vi')
+        return res.badRequest([{msg: 'Thông tin đăng nhập không đúng'}]);
+      else return res.badRequest([{msg: 'Login information is incorrect'}])
     }
   }),
   loginWithFacebook: A(async (req, res) => {
-    const { facebookToken, platform, deviceId } = req.body;
+    const {facebookToken, platform, deviceId, language = 'en'} = req.body;
     if (!facebookToken) {
-      return res.badRequest([{ msg: 'Server không nhận được facebook token' }]);
+      if (language === 'vi')
+        return res.badRequest([{msg: 'Server không nhận được facebook token'}]);
+      else return res.badRequest([{msg: 'Server does not receive facebook token'}])
     }
-    const { id, name = '', email = '' } = await facebook.getUserByToken(facebookToken);
+    const {id, name = '', email = ''} = await facebook.getUserByToken(facebookToken);
 
 
     var user = null;
@@ -164,7 +184,9 @@ module.exports = {
       });
 
       if (user) {
-        return res.badRequest([{ msg: 'Tài khoản Facebook của bạn sử dụng email đã tồn tại trong hệ thống' }]);
+        if (language === 'vi')
+          return res.badRequest([{msg: 'Tài khoản Facebook của bạn sử dụng email đã tồn tại trong hệ thống'}]);
+        else return res.badRequest([{msg: 'Your Facebook account uses an email that already exists in your system'}])
       }
 
       user = await User.create({
@@ -195,8 +217,8 @@ module.exports = {
     res.ok(user);
   }),
   logout: A(async (req, res) => {
-    var { id } = req.user;
-    const { platform, deviceId } = req.body;
+    var {id} = req.user;
+    const {platform, deviceId} = req.body;
 
     await UserDevice.destroy({
       user: id,
@@ -209,17 +231,17 @@ module.exports = {
     });
   }),
   verify: A(async (req, res) => {
-    var { uuid = '' } = req.query || {};
+    var {uuid = ''} = req.query || {};
 
     if (!uuid) {
-      return res.badRequest([{ msg: 'Đường link đã quá hạn' }]);
+      return res.badRequest([{msg: 'Đường link đã quá hạn'}]);
     }
 
     try {
       var verifyEmailToken = await P(jwt.verify, uuid);
     }
     catch (ex) {
-      return res.badRequest([{ msg: 'Đường link không đúng hoặc đã quá hạn' }]);
+      return res.badRequest([{msg: 'Đường link không đúng hoặc đã quá hạn'}]);
     }
     var email = verifyEmailToken.email;
     var user = await User.findOne({
@@ -227,14 +249,14 @@ module.exports = {
     });
 
     if (!user) {
-      return res.badRequest([{ msg: 'Đường link không đúng hoặc đã quá hạn' }]);
+      return res.badRequest([{msg: 'Đường link không đúng hoặc đã quá hạn'}]);
     }
 
     await User.update({
       id: user.id
     }, {
-        isVerifyEmail: true
-      });
+      isVerifyEmail: true
+    });
 
     res.ok(user);
   }),
@@ -255,35 +277,39 @@ module.exports = {
     });
   },
   forgotPassword: A(async (req, res) => {
-    var { email = '' } = req.body || {};
+    var {email = '', language = 'en'} = req.body || {};
 
     email = email.trim();
-    const uuid = jwt.issue({ email: email });
+    const uuid = jwt.issue({email: email});
 
     var user = await User.findOne({
       email: email
     });
 
     if (!user) {
-      return res.badRequest([{ msg: 'Email này không tồn tại' }]);
+      if (language === 'vi')
+        return res.badRequest([{msg: 'Email này không tồn tại'}]);
+      else return res.badRequest([{msg: 'This email does not exist'}]);
     }
 
     await User.update({
       email: email
     }, {
-        uuid: uuid
-      });
+      uuid: uuid
+    });
 
     if (user.email) {
-      sendgrid.sendForgotPassword(user.email, user.name, sails.config.web.domain + '/reset-password?uuid=' + uuid);
+      if (language === 'vi')
+        sendgrid.sendForgotPassword(user.email, user.name, sails.config.web.domain + '/reset-password?uuid=' + uuid);
+      else sendgrid.sendForgotPasswordEN(user.email, user.name, sails.config.web.domain + '/reset-password?uuid=' + uuid)
     }
 
     res.ok({
-      message: 'Vui lòng kiểm tra email để tiếp tục'
+      message: language === 'vi' ? 'Vui lòng kiểm tra email để tiếp tục' : 'Please check email to continue'
     });
   }),
   update: A(async (req, res) => {
-    req.check('name', 'Tên không được để trống').isLength({ min: 1 });
+    req.check('name', 'Tên không được để trống').isLength({min: 1});
 
     var validationResult = await req.getValidationResult();
     if (!validationResult.isEmpty()) {
@@ -291,16 +317,16 @@ module.exports = {
     }
 
     const user = req.user;
-    var { email, name, phoneNumber, avatar } = req.body || {};
+    var {email, name, phoneNumber, avatar} = req.body || {};
 
     await User.update({
       id: user.id
     }, {
-        name,
-        phoneNumber,
-        email,
-        avatar
-      });
+      name,
+      phoneNumber,
+      email,
+      avatar
+    });
 
     res.ok({
       id: user.id,
@@ -308,16 +334,16 @@ module.exports = {
     });
   }),
   changePassword: A(async (req, res) => {
-    req.check('newPassword', 'Mật khẩu phải có ít nhất 6 ký tự').isLength({ min: 6 });
-    req.check('oldPassword', 'Mật khẩu phải có ít nhất 6 ký tự').isLength({ min: 6 });
+    req.check('newPassword', 'Mật khẩu phải có ít nhất 6 ký tự').isLength({min: 6});
+    req.check('oldPassword', 'Mật khẩu phải có ít nhất 6 ký tự').isLength({min: 6});
 
     const validationResult = await req.getValidationResult();
     if (!validationResult.isEmpty()) {
       return res.badRequest(validationResult.array());
     }
 
-    const { oldPassword, newPassword } = req.body || {};
-    const { id } = req.user;
+    const {oldPassword, newPassword, language = 'en'} = req.body || {};
+    const {id} = req.user;
 
     const user = await User.findOne({
       id: id
@@ -326,7 +352,7 @@ module.exports = {
     var isPasswordMatch = await P(bcrypt.compare, oldPassword, user.password);
 
     if (!isPasswordMatch) {
-      return res.badRequest([{ msg: 'Mật khẩu cũ không đúng' }]);
+      return res.badRequest([{msg: language === 'vi' ? 'Mật khẩu cũ không đúng' : 'Old password is incorrect'}]);
     }
 
     const salt = await P(bcrypt.genSalt, 10);
@@ -335,38 +361,38 @@ module.exports = {
     await User.update({
       id: id
     }, {
-        password: hash
-      });
+      password: hash
+    });
 
     res.ok({
       id: id
     });
   }),
   resetPassword: A(async (req, res) => {
-    req.check('password1', 'Mật khẩu phải có ít nhất 6 ký tự').isLength({ min: 6 });
-    req.check('password2', 'Mật khẩu phải có ít nhất 6 ký tự').isLength({ min: 6 });
+    req.check('password1', 'Mật khẩu phải có ít nhất 6 ký tự').isLength({min: 6});
+    req.check('password2', 'Mật khẩu phải có ít nhất 6 ký tự').isLength({min: 6});
 
     const validationResult = await req.getValidationResult();
     if (!validationResult.isEmpty()) {
       return res.badRequest(validationResult.array());
     }
 
-    const { password1, password2, uuid } = req.body || {};
+    const {password1, password2, uuid} = req.body || {};
     if (password1 != password2) {
-      return res.badRequest([{ msg: 'Hai mật khẩu không giống nhau' }]);
+      return res.badRequest([{msg: 'Hai mật khẩu không giống nhau'}]);
     }
 
     const salt = await P(bcrypt.genSalt, 10);
     const hash = await P(bcrypt.hash, password1, salt);
 
     if (!uuid) {
-      return res.badRequest([{ msg: 'Đường link đã quá hạn' }]);
+      return res.badRequest([{msg: 'Đường link đã quá hạn'}]);
     }
     try {
       var verifyEmailToken = await P(jwt.verify, uuid);
     }
     catch (ex) {
-      return res.badRequest([{ msg: 'Đường link không đúng hoặc đã quá hạn' }]);
+      return res.badRequest([{msg: 'Đường link không đúng hoặc đã quá hạn'}]);
     }
 
     var email = verifyEmailToken.email;
@@ -375,14 +401,14 @@ module.exports = {
     });
 
     if (!user) {
-      return res.badRequest([{ msg: 'Đường link không đúng hoặc đã quá hạn' }]);
+      return res.badRequest([{msg: 'Đường link không đúng hoặc đã quá hạn'}]);
     }
 
     await User.update({
       id: user.id
     }, {
-        password: hash
-      });
+      password: hash
+    });
 
     res.ok(user);
   }),
