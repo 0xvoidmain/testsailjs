@@ -28,6 +28,10 @@ module.exports = {
     location: {
       type: 'json',
     },
+    raiseMoney: {
+      type: 'number',
+      defaultsTo: 0
+    },
     type: {
       type: 'string',
       enum: ['raiseFunding', 'idea'],

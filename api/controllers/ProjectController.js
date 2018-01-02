@@ -11,6 +11,8 @@ module.exports = {
     req.check('type', 'Dạng dự án chưa được chọn').isIn(['raiseFunding', 'idea']);
     req.check('phoneNumber', 'Số điện thoại không đúng định dạng').optional().isMobilePhone('vi-VN');
     req.check('startDate', 'Thời gian bắt đầu dự án không đúng').isDate();
+    req.check('raiseMoney', 'Số tiền kêu gọi phải lới hơn 0').optional().isFloat({min: 0});
+
     req.check('endDate', 'Thời gian kết thúc dự án không đúng').isDate()
       .isAfter(new Date().toISOString())
       .withMessage('Thời gian kết thúc phải lớn hơn hiện tại');
@@ -34,10 +36,11 @@ module.exports = {
     }
 
     const user = req.user;
-    var { name, category, detail, location, type, phoneNumber, startDate, endDate, thumbnail } = req.body || {};
+    var { name, raiseMoney, category, detail, location, type, phoneNumber, startDate, endDate, thumbnail } = req.body || {};
 
     name = name.trim();
     detail = detail.trim();
+    raiseMoney = parseFloat(raiseMoney) || 0;
 
     if (new Date(startDate).getTime() > new Date(endDate).getTime()) {
       return res.badRequest([{ msg: 'Thời gian bắt đầu phải trước thời thời gian kết thúc' }]);
@@ -61,6 +64,7 @@ module.exports = {
       startDate: startDate,
       endDate: endDate,
       thumbnail: thumbnail,
+      raiseMoney: raiseMoney,
       location: {
         type: 'Point',
         coordinates: location
