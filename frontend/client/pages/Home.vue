@@ -115,7 +115,7 @@
         <span class="l">url</span> /api/projects <br/>
         <span class="l">method</span> POST <br/>
         <span class="l">header</span> { Authorization: <u>token</u> } <br/>
-        <span class="l">body</span> { name, category: categoryId, detail, type: emum[raiseFunding, idea], phoneNumber, startDate, endDate, thumbnail, location: [<u>lng</u>, <u>lat</u>] }
+        <span class="l">body</span> { name, category: categoryId, detail, type: emum[raiseFunding, idea], raiseMoney, phoneNumber, startDate, endDate, thumbnail, location: [<u>lng</u>, <u>lat</u>] }
       </div>
     </div>
 
