@@ -29,7 +29,7 @@ module.exports = {
       type: 'json',
     },
     raiseMoney: {
-      type: 'number',
+      type: 'float',
       defaultsTo: 0
     },
     type: {
