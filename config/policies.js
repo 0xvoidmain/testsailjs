@@ -97,5 +97,9 @@ module.exports.policies = {
     '*': false,
     find: ['auth'],
     findOne: ['auth']
+  },
+
+  SystemController: {
+    '*': true
   }
 };
