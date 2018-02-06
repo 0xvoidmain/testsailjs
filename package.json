@@ -22,12 +22,11 @@
     "sails": "0.12.13",
     "sails-disk": "0.10.9",
     "sails-mongo": "0.12.2",
-    "vue": "2.4.2",
+    "vue": "2.5.13",
     "vue-progressbar": "0.7.2",
     "vue-router": "2.7.0",
     "vue2-scrollbar": "0.0.1",
     "vuejs-paginate": "1.1.0",
-    "webpack": "2.2.1",
     "winston": "2.3.1"
   },
   "scripts": {
@@ -48,7 +47,9 @@
   "author": "TungHT",
   "license": "",
   "babel": {
-    "presets": ["env"]
+    "presets": [
+      "env"
+    ]
   },
   "devDependencies": {
     "babel-core": "^6.23.1",
@@ -56,7 +57,6 @@
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.1.10",
     "css-loader": "^0.28.4",
-    "extract-text-webpack-plugin": "^3.0.0",
     "grunt": "0.4.5",
     "grunt-contrib-clean": "0.6.0",
     "grunt-contrib-concat": "0.5.1",
@@ -71,7 +71,7 @@
     "stylus-loader": "^3.0.1",
     "vue-loader": "^13.0.2",
     "vue-style-loader": "^3.0.1",
-    "vue-template-compiler": "^2.4.2",
+    "vue-template-compiler": "2.5.13",
     "webpack": "2.2.1"
   }
 }
