@@ -8,7 +8,7 @@ module.exports = {
   create: A(async (req, res) => {
     req.check('name', 'Tên dự án không được để trống').notEmpty();
     req.check('detail', 'Mô tả dự án không được để trống').notEmpty();
-    req.check('type', 'Dạng dự án chưa được chọn').isIn(['raiseFunding', 'idea']);
+    req.check('type', 'Dạng dự án chưa được chọn').isIn(['raiseFunding', 'idea', 'bds_sell', 'bds_buy', 'bds_thue', 'bds_doi', 'docu']);
     req.check('phoneNumber', 'Số điện thoại không đúng định dạng').optional().isMobilePhone('vi-VN');
     req.check('startDate', 'Thời gian bắt đầu dự án không đúng').isDate();
     req.check('raiseMoney', 'Số tiền kêu gọi phải lới hơn 0').optional().isFloat({min: 0});
@@ -51,12 +51,14 @@ module.exports = {
       return res.badRequest([{ msg: 'Thời gian bắt đầu phải trước thời thời gian kết thúc' }]);
     }
 
-    const findCateg = await Category.findOne({
-      id: category
-    });
+    if (type === 'raiseFunding' || type === 'idea') {
+      const findCateg = await Category.findOne({
+        id: category
+      });
 
-    if (!findCateg) {
-      return res.badRequest([{ msg: 'Chủ đề không tồn tại' }]);
+      if (!findCateg) {
+        return res.badRequest([{ msg: 'Chủ đề không tồn tại' }]);
+      }
     }
 
     const project = await Project.create({
