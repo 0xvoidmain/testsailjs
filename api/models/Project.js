@@ -34,7 +34,7 @@ module.exports = {
     },
     type: {
       type: 'string',
-      enum: ['raiseFunding', 'idea'],
+      enum: ['raiseFunding', 'idea', 'bds_sell', 'bds_buy', 'bds_thue', 'bds_doi', 'docu'],
       index: true
     },
     startDate: {
@@ -46,6 +46,17 @@ module.exports = {
     thumbnail: {
       type: 'string'
     },
+    images: [{
+      type: 'string'
+    }],
+
+    //bat dong san
+    huong: 'string',
+    address: 'string',
+    dienTich: 'float',
+
+    price: 'float',
+
     status: {
       type: 'string',
       enum: ['pending','running', 'stoped', 'rejected','deleted'],

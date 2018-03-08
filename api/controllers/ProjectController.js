@@ -12,6 +12,8 @@ module.exports = {
     req.check('phoneNumber', 'Số điện thoại không đúng định dạng').optional().isMobilePhone('vi-VN');
     req.check('startDate', 'Thời gian bắt đầu dự án không đúng').isDate();
     req.check('raiseMoney', 'Số tiền kêu gọi phải lới hơn 0').optional().isFloat({min: 0});
+    req.check('price', 'Số tiền phải lới hơn 0').optional().isFloat({min: 0});
+    req.check('dienTich', 'Diện tích phải lới hơn 0').optional().isFloat({min: 0});
 
     req.check('endDate', 'Thời gian kết thúc dự án không đúng').isDate()
       .isAfter(new Date().toISOString())
@@ -36,7 +38,10 @@ module.exports = {
     }
 
     const user = req.user;
-    var { name, raiseMoney, category, detail, location, type, phoneNumber, startDate, endDate, thumbnail } = req.body || {};
+    var { name, raiseMoney, category, detail, location, type,
+      phoneNumber, startDate, endDate, thumbnail, images, huong, address,
+      dienTich, price
+    } = req.body || {};
 
     name = name.trim();
     detail = detail.trim();
@@ -65,6 +70,10 @@ module.exports = {
       endDate: endDate,
       thumbnail: thumbnail,
       raiseMoney: raiseMoney,
+      huong: huong,
+      address: address,
+      dienTich: dienTich,
+      price: price,
       location: {
         type: 'Point',
         coordinates: location
