@@ -67,4 +67,3 @@ module.exports = {
   autoCreatedAt: true,
   autoUpdatedAt: true,
 };
-
