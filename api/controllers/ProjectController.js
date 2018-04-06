@@ -157,11 +157,29 @@ module.exports = {
       nearQuery['$minDistance'] = minDistance;
     }
 
+    var type = where.type;
+    var queryType = {};
+    delete where.type;
+
+    if (typeof type === 'string') {
+      queryType = {
+        type: type
+      };
+    }
+    else if (Array.isArray(type)) {
+      queryType = {
+        type: {
+          $in: type
+        }
+      }
+    }
+
     const projectIds = (await ProjectNative.find(
       {
         location: {
           $near: nearQuery
         },
+        ...queryType,
         ...where
       }, {
         _id: true
