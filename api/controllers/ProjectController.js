@@ -76,6 +76,7 @@ module.exports = {
       address: address,
       dienTich: dienTich,
       price: price,
+      images: images,
       location: {
         type: 'Point',
         coordinates: location
