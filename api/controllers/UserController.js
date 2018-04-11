@@ -317,7 +317,7 @@ module.exports = {
     }
 
     const user = req.user;
-    var {email, name, phoneNumber, avatar} = req.body || {};
+    var {email, name, phoneNumber, avatar, text1, text2, text3, text4} = req.body || {};
 
     await User.update({
       id: user.id
@@ -325,7 +325,11 @@ module.exports = {
       name,
       phoneNumber,
       email,
-      avatar
+      avatar,
+      text1,
+      text2,
+      text3,
+      text4
     });
 
     res.ok({

@@ -56,6 +56,18 @@ module.exports = {
       collection: 'UserDevice',
       via: 'user'
     },
+    text1: {
+      type: 'string'
+    },
+    text2: {
+      type: 'string'
+    },
+    text3: {
+      type: 'string'
+    },
+    text4: {
+      type: 'string'
+    },
     toJSON: function() {
       var obj = this.toObject();
       delete obj.password;
